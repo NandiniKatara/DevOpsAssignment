@@ -1,0 +1,62 @@
+name: Deploy Selected Docker Image
+
+# Starting the workflow manually with a dropdown to select the Docker image
+on:
+  workflow_dispatch:
+    inputs:
+      image_option:
+        description: 'Select from the dropdown to deploy a Docker image: 1 for Node.js, 2 for MongoDB, 3 for Visual Studio Code, 4 for Jenkins, 5 for Apache HTTP Server'
+        required: true
+        default: '1' 
+        #Node.js is set as default
+        options: ['1', '2', '3', '4', '5']
+        
+        # Description of dropdown options
+        # 1 for Node.js,
+        # 2 for MongoDB,
+        # 3 for Visual Studio Code,
+        # 4 for Jenkins,
+        # 5 for Apache HTTP Server
+
+# Defining the job to deploy the selected Docker image
+jobs:
+  deploy_image:
+    # Specifying the operating system for the job
+    runs-on: ubuntu-latest
+    
+    # Defining the steps to be executed for the job
+    steps:
+      # Step to checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step to deploy the selected Docker image based on the dropdown option
+      - name: Docker Image Deployment
+        run: |
+        
+          # Using a case statement to determine which Docker image to deploy
+          # Switch statements allow for direct jumping to the correct case based on the value of the input
+          # Also, Efficient way to handle multiple cases based on a single value.
+          
+          case "${{ github.event.inputs.image_option }}" in
+            '1')
+              echo "Deploying Node.js"
+              docker run -d node:latest
+              ;;
+            '2')
+              echo "Deploying MongoDB"
+              docker run -d mongo:latest
+              ;;
+            '3')
+              echo "Deploying Visual Studio Code"
+              docker run -d codercom/code-server
+              ;;
+            '4')
+              echo "Deploying Jenkins"
+              docker run -d jenkins/jenkins
+              ;;
+            '5')
+              echo "Deploying Apache HTTP Server"
+              docker run -d httpd:latest
+              ;;
+          esac
